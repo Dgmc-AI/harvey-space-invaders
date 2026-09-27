@@ -1,7 +1,7 @@
 import { webkit } from 'playwright';
 import assert from 'node:assert/strict';
 
-const url = 'https://dgmc-ai.github.io/harvey-space-invaders/';
+const url = 'https://www.dgmc-ai-consultancy.com/play/harvey';
 const browser = await webkit.launch({ headless: true });
 try {
   for (const { name, viewport } of [
@@ -13,6 +13,7 @@ try {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.goto(url, { waitUntil: 'load' });
+    assert.match(page.url(), /dgmc-ai\.github\.io\/harvey-space-invaders/);
     assert.match(await page.title(), /Harvey's Space Invaders/);
     assert.equal(await page.locator('#game').count(), 1);
     const layout = await page.evaluate(() => ({
@@ -38,7 +39,7 @@ try {
     const shotBefore = await page.evaluate(() => shots.length);
     await page.locator('#fire').click();
     const shotAfter = await page.evaluate(() => shots.length);
-    assert.ok(shotAfter >= shotBefore, name + ' fire did not respond');
+    assert.ok(shotAfter > shotBefore, name + ' fire did not respond');
     await page.locator('#sound').click();
     assert.match(await page.locator('#sound').textContent(), /MUTED/);
     await page.locator('#sound').click();
